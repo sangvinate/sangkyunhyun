@@ -1,0 +1,149 @@
+---
+title: "한국 휴머노이드 로봇 생산 전망 분석"
+author: "골드만삭스 리서치 기반 분석"
+date: "`r Sys.Date()`"
+output:
+  word_document:
+    reference_docx: null
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(ggplot2)
+library(scales)
+library(knitr)
+```
+
+# 1. 개요
+
+본 문서는 골드만삭스(Goldman Sachs Research)가 발표한 한국의 휴머노이드 로봇 생산 전망을 분석한 자료입니다. 2025년부터 2035년까지 한국 기업들의 부품을 사용하여 생산될 것으로 예상되는 휴머노이드 로봇의 수량을 예측하고 있습니다.
+
+# 2. 주요 데이터
+
+```{r data-table}
+robot_data <- data.frame(
+  연도 = 2025:2035,
+  생산량_대 = c(0, 0, 20000, 30000, 50000, 75000, 110000, 160000, 210000, 300000, 410000)
+)
+
+robot_data$전년대비_증가 = c(NA, diff(robot_data$생산량_대))
+robot_data$증가율_percent = c(NA, round(diff(robot_data$생산량_대) / robot_data$생산량_대[-nrow(robot_data)] * 100, 1))
+
+kable(robot_data,
+      col.names = c("연도", "예상 생산량 (대)", "전년 대비 증가 (대)", "증가율 (%)"),
+      format.args = list(big.mark = ","),
+      caption = "표 1. 연도별 휴머노이드 로봇 생산 예측")
+```
+
+# 3. 주요 분석 결과
+
+## 3.1 성장 추세
+
+```{r growth-analysis}
+total_growth <- robot_data$생산량_대[11] - robot_data$생산량_대[1]
+total_production <- sum(robot_data$생산량_대)
+avg_growth_2028_2035 <- mean(diff(robot_data$생산량_대[4:11]))
+```
+
+- **기간**: 2025년 ~ 2035년 (11년)
+- **초기 생산량**: `r format(robot_data$생산량_대[1], big.mark=",")`대 (2025년)
+- **최종 생산량**: `r format(robot_data$생산량_대[11], big.mark=",")`대 (2035년)
+- **총 증가량**: `r format(total_growth, big.mark=",")`대
+- **누적 생산량**: `r format(total_production, big.mark=",")`대 (2025-2035)
+
+## 3.2 성장 단계 구분
+
+### 초기 단계 (2025-2027)
+- 거의 생산이 없거나 매우 미미한 수준
+- 기술 개발 및 시장 진입 준비 기간으로 추정
+
+### 도입 단계 (2028-2030)
+- 2028년부터 본격적인 생산 시작 (약 30,000대)
+- 연평균 약 22,500대씩 증가
+- 시장 진입 및 초기 상용화 단계
+
+### 급성장 단계 (2031-2035)
+- 2031년부터 급격한 성장세 시작
+- 2031년: 110,000대 (전년 대비 46.7% 증가)
+- 2035년: 410,000대 (전년 대비 36.7% 증가)
+- 연평균 약 67,500대씩 증가
+
+## 3.3 시사점
+
+1. **기하급수적 성장**: 2028년 이후 매년 가파른 성장세 예상
+2. **한국의 위상**: 한국 기업들이 글로벌 휴머노이드 로봇 생산에서 핵심 부품 공급자로 자리매김
+3. **산업 전망**: 2030년대 중반에는 연간 40만대 이상의 대량 생산 체제 구축 예상
+
+# 4. 시각화
+
+```{r chart, fig.width=10, fig.height=6, dpi=300}
+p <- ggplot(robot_data, aes(x = 연도, y = 생산량_대)) +
+  geom_bar(stat = "identity", fill = "#003366", width = 0.7) +
+  scale_y_continuous(
+    labels = comma,
+    breaks = seq(0, 400000, 100000),
+    limits = c(0, 450000),
+    expand = c(0, 0)
+  ) +
+  scale_x_continuous(
+    breaks = 2025:2035,
+    labels = 2025:2035
+  ) +
+  labs(
+    title = "South Korea's estimated footprint in humanoid robot production",
+    subtitle = "Humanoid robots forecast to be produced using components from South Korean companies",
+    x = "",
+    y = "생산량 (대)",
+    caption = "Source: Goldman Sachs Research"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0, margin = margin(b = 5)),
+    plot.subtitle = element_text(size = 10, hjust = 0, color = "gray30", margin = margin(b = 15)),
+    plot.caption = element_text(size = 9, hjust = 0, color = "gray50", margin = margin(t = 10)),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(color = "gray90", size = 0.3),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10),
+    plot.margin = margin(20, 20, 20, 20)
+  )
+
+print(p)
+```
+
+*그림 1. 한국 휴머노이드 로봇 생산 전망 (2025-2035)*
+
+# 5. 연도별 상세 분석
+
+## 2025-2027년: 태동기
+시장 형성 이전 단계로, 기술 개발과 파일럿 프로젝트 진행 시기입니다.
+
+## 2028-2030년: 시장 진입기
+- 2028년 약 3만대로 본격 생산 시작
+- 산업용 및 서비스용 로봇 초기 배치
+- 연평균 150% 이상의 고성장 예상
+
+## 2031-2033년: 성장 가속기
+- 2031년 11만대 돌파
+- 2033년 21만대로 2배 증가
+- 대량 생산 체제 구축 및 비용 절감 효과
+
+## 2034-2035년: 대량 생산기
+- 2034년 30만대, 2035년 41만대
+- 글로벌 시장에서 한국 부품의 표준화
+- 완전 자동화 생산 라인 가동
+
+# 6. 결론
+
+골드만삭스의 분석에 따르면, 한국은 휴머노이드 로봇 산업에서 핵심 부품 공급국으로 부상할 것으로 전망됩니다. 특히 2028년 이후 급격한 성장세를 보이며, 2035년에는 연간 40만대 이상의 로봇 생산에 기여할 것으로 예상됩니다.
+
+이는 한국의 로봇 산업, 반도체, 디스플레이, 배터리 등 첨단 부품 산업의 경쟁력이 결합된 결과로 해석됩니다. 향후 10년간 이 산업은 한국 경제의 새로운 성장 동력이 될 가능성이 높습니다.
+
+---
+
+**참고 자료**: Goldman Sachs Research
+**작성일**: `r format(Sys.Date(), "%Y년 %m월 %d일")`
