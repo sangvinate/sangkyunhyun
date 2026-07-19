@@ -1,0 +1,5 @@
+# API 키 등 비밀정보는 절대 커밋하지 않습니다
+.Renviron
+.Rhistory
+.RData
+.Rproj.user/
